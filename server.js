@@ -14,6 +14,8 @@ import Checkout from "./model/checkout.js";
 import sendRenewalEmail from './controller/notification.js';
 import { handleWebhook } from './controller/stripeController.js';
 import subscriptionRoutes from "./router/subscription.js";
+import https from 'https';
+import http from 'http';
 
 dotenv.config();
 
@@ -41,10 +43,10 @@ app.get('/', (req, res) => {
     res.send("Hello Sonu, how are you?");
 });
 
-app.listen(5000, () => {
-    console.log("Server Started");
-    db();
-});
+// app.listen(5000, () => {
+//     console.log("Server Started");
+//     db();
+// });
 
 // Scheduled job to run daily at midnight
 cron.schedule('0 0 * * *', async () => {
@@ -91,4 +93,23 @@ cron.schedule('0 0 * * *', async () => {
 }, {
   scheduled: true,
   timezone: "Asia/Kolkata" // Timezone for IST
+});
+
+
+const port = process.env.PORT;
+let server;
+if (process.env.SERVER_MODE === 'https' && process.env.NODE_ENV === 'production') {
+    // production
+    server = https.createServer({
+        key: fs.readFileSync(process.env.SSL_KEY_PATH, 'utf8'),
+        cert: fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8'),
+        ca: fs.readFileSync(process.env.SSL_CA_PATH, 'utf8'),
+    }, app);
+} else {
+    // development
+    server = http.createServer(app);
+}
+
+server.listen(port, () => {
+    console.log(`[Server]: Server is running at http://localhost:${port}`);
 });
