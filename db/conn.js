@@ -7,7 +7,7 @@ const DB = process.env.DATABASE_URL;
 const conn = () => {
   mongoose
     .connect(DB)
-    .then(() => console.log("DataBase Connected"))
+    .then(() => console.log("DataBase Connected", DB))
     .catch((errr) => {
       console.log(errr);
     });

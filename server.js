@@ -105,9 +105,11 @@ if (process.env.SERVER_MODE === 'https' && process.env.NODE_ENV === 'production'
         cert: fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8'),
         ca: fs.readFileSync(process.env.SSL_CA_PATH, 'utf8'),
     }, app);
+    db();
 } else {
     // development
     server = http.createServer(app);
+    db();
 }
 
 server.listen(port, () => {
