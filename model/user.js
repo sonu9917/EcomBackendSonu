@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       default: "user",
-      enum: ["user", "admin"], // Assuming there might be roles like 'user' and 'admin'
+      enum: ["user", "admin","super-admin"], // Assuming there might be roles like 'user' and 'admin'
     },
     referralCode: String,
     referredBy: String,

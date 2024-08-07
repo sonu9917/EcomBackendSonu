@@ -1,7 +1,6 @@
 import express from 'express';
 import { createCheckoutSession, getAllCheckout, getInvoice} from '../controller/checkout.js';
 import protectRoute from '../middleware/protectRoute.js';
-import uploadInvoice from '../middleware/uploadInvoice.js';
 
 const CheckoutRouter = express.Router();
 

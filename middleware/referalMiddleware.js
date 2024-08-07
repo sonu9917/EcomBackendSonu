@@ -12,7 +12,7 @@ const refferalMiddleware = async (req,res,next) => {
         }
     
         // Decode JWT token to get payload
-        const decoded = jwt.verify(token, '123456789987456123'); // Replace 'your_jwt_secret' with your actual JWT secret
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Replace 'your_jwt_secret' with your actual JWT secret
     
         console.log(decoded)
     

@@ -217,39 +217,42 @@ export const getProductsByCategoryAndSubcategory = async (req, res) => {
 
 
 // send email about product enquiry to perticular sellor add product
+
 export const productInquiry = async (req, res) => {
   try {
     const { name, email, message } = req.body;
     const { id } = req.params;
 
-    console.log(name, email, message, id)
+    console.log(name, email, message, id);
 
     // Convert userId to ObjectId
     const productId = new mongoose.Types.ObjectId(id);
 
-    // // Find the admin (seller) to whom the inquiry should be sent
+    // Find the admin (seller) to whom the inquiry should be sent
     const product = await Product.findOne({ _id: productId }).populate('user');
 
-    const userId = product.user._id
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
 
-    console.log(userId)
+    const userId = product.user._id;
+    const sellorEmail = product.user.email;
 
-
-
-
+    console.log('Seller ID:', userId);
+    console.log('Seller Email:', sellorEmail);
 
     if (!userId) {
       return res.status(404).json({ message: 'Seller not found' });
     }
 
+    // Include product details in the email
+    const productName = product.name;
+    const productPrice = product.price;
+    const productDescription = product.description || 'No description available';
 
-    const user = await User.findOne({ _id: userId })
-
-
-    const sellorEmail = user.email
-
-    await sendEmail(sellorEmail, "Product Inquiry",
-
+    await sendEmail(
+      sellorEmail,
+      'Product Inquiry',
       `
       <!DOCTYPE html>
       <html lang="en">
@@ -294,6 +297,12 @@ export const productInquiry = async (req, res) => {
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Message:</strong></p>
           <p>${message}</p>
+          <hr />
+          <h2>Product Details</h2>
+          <p><strong>Product Name:</strong> ${productName}</p>
+          <p><strong>Product Price:</strong> $${productPrice}</p>
+          <p><strong>Product Description:</strong></p>
+          <p>${productDescription}</p>
           <div class="footer">
             <p>Thank you for your inquiry. We will get back to you as soon as possible.</p>
             <p>Best regards,<br>Your Company Name</p>
@@ -301,14 +310,8 @@ export const productInquiry = async (req, res) => {
         </div>
       </body>
       </html>
-    `,
-    )
-
-
-
-
-    // Send the email
-    // await transporter.sendMail(mailOptions);
+    `
+    );
 
     res.status(200).json({ message: 'Inquiry sent successfully' });
   } catch (error) {
@@ -317,12 +320,31 @@ export const productInquiry = async (req, res) => {
   }
 };
 
-
 // delete expired admin product
-export const deleteExpiredAdminProduct = async (req,res) => {
+export const deleteExpiredAdminProduct = async (req, res) => {
   try {
-    
+    const { userId } = req.body; // Extract the userId from the request body
+
+    // Find expired products by userId
+    const expiredProducts = await Product.find({ 
+      user: userId, 
+    });
+
+    if (expiredProducts.length === 0) {
+      return res.status(404).json({ message: "No expired products found for this user" });
+    }
+
+    // Delete expired products
+    const deleteResult = await Product.deleteMany({ 
+      user: userId,
+    });
+
+    res.status(200).json({
+      message: `${deleteResult.deletedCount} expired product(s) deleted successfully`
+    });
+
   } catch (error) {
-    
+    console.log("Error in deleting expired products:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }

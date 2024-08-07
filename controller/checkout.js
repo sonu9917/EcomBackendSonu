@@ -7,9 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url'; // Import for ES modules
 import Transition from '../model/transition.js';
-
-
-
+   
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 

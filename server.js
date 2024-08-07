@@ -14,6 +14,7 @@ import Checkout from "./model/checkout.js";
 import sendRenewalEmail from './controller/notification.js';
 import { handleWebhook } from './controller/stripeController.js';
 import subscriptionRoutes from "./router/subscription.js";
+import StoreRouter from "./router/storeRouter.js";
 import https from 'https';
 import http from 'http';
 
@@ -37,10 +38,10 @@ app.use('/category', CategoryRouter);
 app.use('/subcategory', SubCategoryRouter);
 app.use('/payout', PayoutRouter);
 app.use("/subscription", subscriptionRoutes);
-
+app.use("/store",StoreRouter)
 
 app.get('/', (req, res) => {
-    res.send("Hello Sonu, how are you?");
+    res.send("Backend Server Running!!");
 });
 
 // app.listen(5000, () => {
