@@ -229,3 +229,51 @@ export const updateRoleSubscription = async (req, res) => {
   }
 };
 
+
+// update user firstName & lastName
+export const updateUserDetails = async (req, res) => {
+  try {
+    const { firstName, lastName, currentPassword, newPassword } = req.body;
+
+    console.log(currentPassword,newPassword)
+
+    // Fetch the user by ID
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update name fields
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+
+    // Handle password change
+    if (currentPassword && newPassword) {
+      // Check if the current password is correct
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).send({ message: 'Current password is incorrect' });
+      }
+
+      // Validate new password
+      if (newPassword.length < 6) {
+        return res.status(400).send({ message: 'New password must be at least 6 characters long' });
+      }
+
+      // Hash and update the new password
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(newPassword, salt);
+    }
+
+    // Save the updated user
+    const updatedUser = await user.save();
+
+    // Respond with the updated user details
+    res.status(200).send({message:"user details successfully",updatedUser})
+  } catch (err) {
+    console.error(err); // Log the error for debugging
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+

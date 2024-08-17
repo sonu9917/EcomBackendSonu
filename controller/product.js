@@ -57,7 +57,7 @@ export const productList = async (req, res) => {
     if (id) {
       product = await Product.findOne({ _id: id }).populate('category').populate('subCategory').populate('user');
     } else {
-      product = await Product.find();
+      product = await Product.find().populate('category').populate('subCategory');
     }
 
     if (product) {

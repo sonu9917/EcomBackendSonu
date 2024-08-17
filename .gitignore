@@ -48,7 +48,7 @@ data/
 
 # Frontend
 # Ignore build artifacts
-public/
+# public/
 
 # Ignore compiled CSS
 *.css.map

@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import { forgotPassword, getUserDetails, login, logout, register, resetPassword, updateRoleSubscription, verifyOtp } from '../controller/user.js'
+import { forgotPassword, getUserDetails, login, logout, register, resetPassword, updateRoleSubscription, updateUserDetails, verifyOtp } from '../controller/user.js'
 import protectRoute from '../middleware/protectRoute.js'
 
 
@@ -13,6 +13,7 @@ UserRouter.post('/forgot-password',forgotPassword)
 UserRouter.post('/verify-otp',verifyOtp)
 UserRouter.post('/reset-password',resetPassword)
 UserRouter.post('/update-role-subscription',updateRoleSubscription)
+UserRouter.put('/updateUserDetails/:id',updateUserDetails)
 
 
 export default UserRouter
